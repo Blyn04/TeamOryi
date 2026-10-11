@@ -30,13 +30,13 @@ export function Onboarding() {
   ][step]
 
   return (
-    <div className="h-full flex flex-col bg-white">
+    <div className="h-full min-h-0 flex flex-col bg-white">
       <div className="px-5 pt-5 flex items-center gap-3">
         {step > 0 && <button className="text-2xl text-ink-soft font-black" onClick={() => setStep(step - 1)}>←</button>}
         <ProgressBar value={(step + 1) / 4} />
       </div>
 
-      <div className="flex-1 overflow-y-auto px-5 pt-6 pb-4">
+      <div className="flex-1 min-h-0 overflow-y-auto px-5 pt-4 sm:pt-6 pb-4">
         {step === 0 && (
           // branding moment before Pipo's greeting — the icon art carries the "Sipnayan" wordmark itself
           <motion.img

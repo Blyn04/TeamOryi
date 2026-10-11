@@ -12,7 +12,7 @@ import { GamesScreen } from './screens/Games'
 import { DuelScreen } from './screens/Duel'
 import { CashierSimulatorScreen } from './screens/CashierSimulator'
 import { NerdleScreen } from './screens/Nerdle'
-import { bestModelFor, isModelCached, loadModel } from './ai/llm'
+import { bestModelFor, isModelCached, loadModel, useAi } from './ai/llm'
 import { onAudioUnlocked, setMuted } from './lib/sfx'
 import { say } from './lib/voice'
 import { IconGallery } from './components/IconGallery'
@@ -33,14 +33,20 @@ export default function App() {
   }, [])
 
   useEffect(() => {
-    if (aiEnabled) bestModelFor(aiModel).then(async (id) => { if (await isModelCached(id)) loadModel(id) })
+    if (aiEnabled) bestModelFor(aiModel).then(async (id) => {
+      if (await isModelCached(id)) {
+        await loadModel(id)
+        const loaded = useAi.getState()
+        if (loaded.status === 'ready' && loaded.modelId && loaded.modelId !== id) useGame.getState().set({ aiModel: loaded.modelId })
+      }
+    })
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   if (import.meta.env.DEV && location.search.includes('icons')) return <IconGallery />
 
   return (
-    <div className="h-full w-full flex justify-center bg-[#FDECEF]">
-      <div className="relative h-full w-full max-w-[480px] bg-white shadow-[0_0_40px_rgba(255,143,177,.18)] overflow-hidden">
+    <div className="h-[100dvh] w-full flex justify-center bg-[#FDECEF] pt-[env(safe-area-inset-top)] box-border">
+      <div className="relative h-full min-h-0 w-full max-w-[480px] bg-white shadow-[0_0_40px_rgba(255,143,177,.18)] overflow-hidden">
         {screen === 'onboarding' && <Onboarding />}
         {screen === 'path' && <PathScreen />}
         {screen === 'learn' && stageId && <LearnScreen key={stageId} />}

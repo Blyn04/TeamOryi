@@ -36,9 +36,10 @@ interface AiState {
   backend: Backend | null
   gpu: boolean | null
   lastError?: string
+  gpuFallback: boolean
 }
 
-export const useAi = create<AiState>(() => ({ status: 'idle', progress: 0, progressText: '', error: null, modelId: null, backend: null, gpu: null }))
+export const useAi = create<AiState>(() => ({ status: 'idle', progress: 0, progressText: '', error: null, modelId: null, backend: null, gpu: null, gpuFallback: false }))
 
 let engine: WebWorkerMLCEngine | null = null
 let cpu: Wllama | null = null
@@ -98,18 +99,19 @@ export function loadModel(modelId: string): Promise<void> {
   if ((engine || cpu) && useAi.getState().modelId === modelId && useAi.getState().status === 'ready') return Promise.resolve()
   if (loading) return loading
   loading = (async () => {
-    useAi.setState({ status: 'checking', error: null })
+    useAi.setState({ status: 'checking', error: null, gpuFallback: false })
     if (info.backend === 'gpu' && !(await webgpuSupported())) {
       useAi.setState({ status: 'unsupported' })
       return
     }
     useAi.setState({ status: 'loading', progress: 0, progressText: 'Sinisimulan…', modelId, backend: info.backend })
+    let worker: Worker | null = null
     try {
       if (info.backend === 'cpu') {
         await loadCpu(info)
       } else {
         const { CreateWebWorkerMLCEngine } = await import('@mlc-ai/web-llm')
-        const worker = new Worker(new URL('./worker.ts', import.meta.url), { type: 'module' })
+        worker = new Worker(new URL('./worker.ts', import.meta.url), { type: 'module' })
         engine = await CreateWebWorkerMLCEngine(worker, modelId, {
           initProgressCallback: (p) => useAi.setState({ progress: p.progress, progressText: p.text }),
         })
@@ -118,7 +120,32 @@ export function loadModel(modelId: string): Promise<void> {
     } catch (e) {
       engine = null
       cpu = null
-      useAi.setState({ status: 'error', error: e instanceof Error ? e.message : String(e) })
+      worker?.terminate()
+      const message = e instanceof Error ? e.message : String(e)
+      if (info.backend === 'gpu' && /maxStorageBufferBindingSize/i.test(message)) {
+        const fallback = modelInfo('cpu-qwen2.5-0.5b')
+        useAi.setState({
+          status: 'loading',
+          modelId: fallback.id,
+          backend: fallback.backend,
+          progress: 0,
+          progressText: 'Hindi suportado ng GPU ang model. Lilipat sa CPU version…',
+          error: null,
+        })
+        try {
+          await loadCpu(fallback)
+          useAi.setState({ status: 'ready', progress: 1, progressText: '', gpuFallback: true })
+          return
+        } catch (fallbackError) {
+          cpu = null
+          useAi.setState({
+            status: 'error',
+            error: `Hindi rin ma-load ang CPU model: ${fallbackError instanceof Error ? fallbackError.message : String(fallbackError)}`,
+          })
+          return
+        }
+      }
+      useAi.setState({ status: 'error', error: message })
     } finally {
       loading = null
     }

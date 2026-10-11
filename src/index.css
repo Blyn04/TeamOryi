@@ -38,7 +38,7 @@
   --color-grape-dark: #7B3FC4;
 }
 
-html, body, #root { height: 100%; }
+html, body, #root { width: 100%; height: 100%; min-height: 100%; }
 body {
   margin: 0;
   background: var(--color-cloud);
@@ -46,6 +46,17 @@ body {
   font-family: var(--font-sans);
   -webkit-tap-highlight-color: transparent;
   overscroll-behavior: none;
+}
+
+@media (max-height: 760px) {
+  .math-keyboard-key { height: clamp(36px, 6.2dvh, 46px); }
+  .math-keyboard-action { height: clamp(36px, 6dvh, 44px); }
+  .math-keyboard-tabs button { height: 36px; }
+}
+
+@media (max-height: 640px) {
+  .math-keyboard-key { height: clamp(32px, 5.8dvh, 38px); }
+  .math-keyboard-action { height: clamp(32px, 5.6dvh, 36px); }
 }
 
 /* Screen surface: not flat white — a whisper of blush→lavender plus a faint tile of tiny math marks
@@ -98,6 +109,11 @@ math-field {
 math-field:focus-within { border-color: var(--color-sky); }
 math-field::part(virtual-keyboard-toggle),
 math-field::part(menu-toggle) { display: none; }
+.tutor-math-field math-field {
+  max-height: min(18dvh, 128px);
+  overflow: auto;
+  overscroll-behavior: contain;
+}
 
 .latex-inline {
   display: inline-block;

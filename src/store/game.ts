@@ -6,11 +6,13 @@ import { addAttempt, type AttemptSource, type DuelPvpStats, type Progress } from
 
 export const MAX_HEARTS = 5
 
-export const today = () => new Date().toLocaleDateString('en-CA') // YYYY-MM-DD local
+export const localDateKey = (date: Date) =>
+  `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
+export const today = () => localDateKey(new Date())
 const yesterday = () => {
   const d = new Date()
   d.setDate(d.getDate() - 1)
-  return d.toLocaleDateString('en-CA')
+  return localDateKey(d)
 }
 
 export type Screen = 'onboarding' | 'path' | 'learn' | 'lesson' | 'complete' | 'tutor' | 'profile' | 'quests' | 'games' | 'duel' | 'cashier' | 'nerdle'

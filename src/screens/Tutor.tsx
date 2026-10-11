@@ -191,7 +191,7 @@ export function TutorScreen() {
   }
 
   return (
-    <div className="h-full flex flex-col bg-cloud">
+    <div className="h-full min-h-0 flex flex-col bg-cloud">
       <header className="flex items-center gap-2 px-3 py-2 bg-white border-b-2 border-line">
         <button onClick={() => go('path')} className="w-8 h-8 flex items-center justify-center text-ink-soft" aria-label="Back">
           <svg viewBox="0 0 24 24" width="22" height="22"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
@@ -217,7 +217,7 @@ export function TutorScreen() {
         ))}
       </div>
 
-      <div ref={scroller} className="flex-1 overflow-y-auto no-scrollbar px-3 py-4 space-y-3 screen-bg" style={{ ['--screen-tint' as string]: '#DCE8FF' }}>
+      <div ref={scroller} className="flex-1 min-h-0 overflow-y-auto no-scrollbar px-3 py-4 space-y-3 screen-bg" style={{ ['--screen-tint' as string]: '#DCE8FF' }}>
         {!ready && (
           <div className="card-soft rounded-2xl p-4">
             <div className="font-black mb-2 flex items-center gap-2"><Icon name="chip" size={26} /> {L.turnOn}</div>
@@ -259,7 +259,7 @@ export function TutorScreen() {
           className="w-full h-11 px-3 rounded-xl bg-cloud border-2 border-line font-semibold outline-none focus:border-sky" />
         {/* Math box always visible; tapping it brings the keyboard back */}
         <div onPointerDown={() => setShowKb(true)}>
-          <MathField ref={mf} onChange={setLatex} onEnter={send} placeholder={L.math} className="[&_math-field]:text-[22px] [&_math-field]:py-1" />
+          <MathField ref={mf} onChange={setLatex} onEnter={send} placeholder={L.math} className="tutor-math-field [&_math-field]:text-[22px] [&_math-field]:py-1" />
         </div>
         {!showKb && (
           <button onClick={send} disabled={busy} className="btn3d w-full h-11 bg-sky text-white" style={{ ['--shadow' as string]: 'var(--color-sky-dark)' }}>{L.send}</button>

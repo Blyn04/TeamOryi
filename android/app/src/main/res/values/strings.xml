@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Sipnayan</string>
+    <string name="title_activity_main">Sipnayan</string>
+    <string name="package_name">org.sipnayan.app</string>
+    <string name="custom_url_scheme">org.sipnayan.app</string>
+</resources>

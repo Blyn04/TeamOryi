@@ -24,7 +24,10 @@ export function AiSetupCard({ compact = false }: { compact?: boolean }) {
 
   const start = () => {
     set({ aiEnabled: true })
-    loadModel(aiModel)
+    void loadModel(aiModel).then(() => {
+      const loaded = useAi.getState()
+      if (loaded.status === 'ready' && loaded.modelId && loaded.modelId !== aiModel) set({ aiModel: loaded.modelId })
+    })
   }
   const choices = gpu === false ? MODELS.filter((m) => m.backend === 'cpu') : MODELS
 
@@ -60,7 +63,14 @@ export function AiSetupCard({ compact = false }: { compact?: boolean }) {
           <div className="text-xs font-bold text-ink-soft line-clamp-2">{Math.round(ai.progress * 100)}% · {ai.progressText}</div>
         </div>
       ) : ai.status === 'ready' && ai.modelId === aiModel ? (
-        <div className="rounded-2xl bg-leaf-soft text-leaf-dark font-black p-3 flex items-center justify-center gap-2"><Icon name="shield" size={24} /> {en ? 'Pipo AI is ready' : 'Handa na si Pipo AI'}{modelInfo(aiModel).backend === 'cpu' ? ' (CPU)' : ''} — 100% offline!</div>
+        <div className="space-y-2">
+          {ai.gpuFallback && (
+            <div className="rounded-2xl bg-sun-soft border-2 border-sun p-3 text-sm font-semibold">
+              {en ? 'This device has a low GPU limit, so Pipo switched to CPU mode. It still works offline, but replies may be slower.' : 'Mababa ang GPU limit ng device na ito, kaya lumipat si Pipo sa CPU mode. Gagana pa rin offline pero mas mabagal sumagot.'}
+            </div>
+          )}
+          <div className="rounded-2xl bg-leaf-soft text-leaf-dark font-black p-3 flex items-center justify-center gap-2"><Icon name="shield" size={24} /> {en ? 'Pipo AI is ready' : 'Handa na si Pipo AI'}{modelInfo(aiModel).backend === 'cpu' ? ' (CPU)' : ''} — 100% offline!</div>
+        </div>
       ) : (
         <Button tone="leaf" className="w-full" onClick={start}>
           {cached[aiModel] ? (en ? 'Load the AI' : 'I-load ang AI') : (en ? 'Download the AI' : 'I-download ang AI')}

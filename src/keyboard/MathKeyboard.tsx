@@ -74,7 +74,7 @@ function Key({ k, onKey }: { k: KeyDef; onKey: (k: KeyDef) => void }) {
       onPointerUp={() => end(true)}
       onPointerLeave={() => pressed && end(false)}
       onContextMenu={(e) => e.preventDefault()}
-      className={`relative h-[52px] rounded-xl bg-white font-extrabold select-none touch-none flex items-center justify-center
+      className={`math-keyboard-key relative h-[52px] rounded-xl bg-white font-extrabold select-none touch-none flex items-center justify-center
         shadow-[0_3px_0_#D9D1E3] transition-transform duration-75 ${pressed ? 'translate-y-[3px] shadow-none bg-sky-soft' : ''} ${color}`}
     >
       <div className={`flex items-center justify-center leading-none ${
@@ -102,7 +102,7 @@ function ActionKey({ label, onPress, wide, children, tone = 'plain' }: { label: 
       type="button"
       aria-label={label}
       onPointerDown={(e) => { e.preventDefault(); haptic(8); onPress() }}
-      className={`h-[50px] rounded-xl bg-[#E7E1EF] text-ink-soft font-black flex items-center justify-center shadow-[0_3px_0_#CFC6DA] active:translate-y-[3px] active:shadow-none ${wide ? 'col-span-2' : ''}`}
+      className={`math-keyboard-action h-[50px] rounded-xl bg-[#E7E1EF] text-ink-soft font-black flex items-center justify-center shadow-[0_3px_0_#CFC6DA] active:translate-y-[3px] active:shadow-none ${wide ? 'col-span-2' : ''}`}
     >
       {children}
     </button>
@@ -119,9 +119,9 @@ export function MathKeyboard({ tabs, onKey, onAction, actionLabel = 'CHECK', act
   const grid = tab === 'history' || tab === 'quick' ? null : LAYOUTS[tab]
 
   return (
-    <div className="bg-[#F1EDF6] border-t-2 border-line safe-bottom select-none">
+    <div className="math-keyboard-panel bg-[#F1EDF6] border-t-2 border-line safe-bottom select-none">
       {/* Tabs — like Symbolab: icon tabs with an underline on the active one */}
-      <div className="flex justify-center gap-1 px-2 pt-1">
+      <div className="math-keyboard-tabs flex justify-center gap-1 px-2 pt-1">
         {allTabs.map((t) => (
           <button
             key={t}

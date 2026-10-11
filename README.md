@@ -184,6 +184,12 @@ npm run dev
 
 Buksan ang **http://localhost:5173** sa Chrome.
 
+**Gumawa ng Android APK:** kailangan din ng Android SDK at JDK 21 (kasama sa Android Studio).
+Patakbuhin ang `npm run cap:apk`; makikita ang debug APK sa
+`android/app/build/outputs/apk/debug/app-debug.apk`. Gamitin ang `npm run cap:icons`
+pagkatapos palitan ang `public/icon-master-500.png` o `public/maskable-icon-512.png`
+para i-update ang Pipo/Sipnayan launcher icon.
+
 Iba pang commands:
 
 ```bash
@@ -191,6 +197,7 @@ npm run build     # production build → dist/
 npm run preview   # i-serve ang build (http://localhost:4173)
 npm test          # self-tests: 24,000+ generated questions, solver, calculus, guardrails, games, reports, word problems
 npm run cap:icons # Android/iOS app icons (pagkatapos ng `npx cap add android`)
+npm run cap:apk   # build at sync ang app, saka buuin ang Android debug APK
 ```
 
 **Subukan sa phone habang nagde-develop (same Wi-Fi):**

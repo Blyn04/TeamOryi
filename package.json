@@ -12,9 +12,11 @@
     "cap:sync": "cap sync",
     "cap:icons": "node scripts/cap-icons.mjs",
     "cap:copy": "cap copy",
-    "cap:build": "npm run build && cap sync"
+    "cap:build": "npm run build && cap sync",
+    "cap:apk": "npm run cap:build && cd android && gradlew assembleDebug"
   },
   "dependencies": {
+    "@capacitor/android": "^8.5.3",
     "@capacitor/core": "^8.5.3",
     "@capacitor/filesystem": "^8.1.4",
     "@capacitor/share": "^8.0.3",

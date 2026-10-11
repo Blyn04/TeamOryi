@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
-import { useGame } from '../store/game'
+import { localDateKey, today, useGame } from '../store/game'
 import { WORLDS } from '../curriculum/worlds'
 import { ACHIEVEMENTS } from '../store/quests'
 import { BADGE_ART, Pipo } from '../components/Pipo'
@@ -14,17 +14,25 @@ import { exportBackupString, importBackupString } from '../store/backup'
 
 type ProfileSubpage = 'main' | 'settings' | 'achievements' | 'curriculum' | 'ai'
 
-const HAWAIIAN_WEEKDAYS = ['L', 'M', 'M', 'H', 'P', 'A', 'K'] as const
+const WEEKDAYS = [
+  { short: 'S', full: 'Sunday' },
+  { short: 'M', full: 'Monday' },
+  { short: 'T', full: 'Tuesday' },
+  { short: 'W', full: 'Wednesday' },
+  { short: 'TH', full: 'Thursday' },
+  { short: 'F', full: 'Friday' },
+  { short: 'S', full: 'Saturday' },
+] as const
 
 function getCalendarData(activity: Record<string, number>) {
   const now = new Date()
   const year = now.getFullYear()
   const month = now.getMonth()
   const daysInMonth = new Date(year, month + 1, 0).getDate()
-  const lead = (new Date(year, month, 1).getDay() + 6) % 7
+  const lead = new Date(year, month, 1).getDay()
   const days = Array.from({ length: daysInMonth }, (_, i) => {
     const d = new Date(year, month, i + 1)
-    const key = d.toLocaleDateString('en-CA')
+    const key = localDateKey(d)
     return { key, xp: activity[key] ?? 0, label: i + 1 }
   })
   const trail = (7 - ((lead + days.length) % 7)) % 7
@@ -34,24 +42,28 @@ function getCalendarData(activity: Record<string, number>) {
 
 function Calendar({ activity }: { activity: Record<string, number> }) {
   const { days, lead, trail, monthName } = useMemo(() => getCalendarData(activity), [activity])
+  const currentDay = today()
 
   return (
-    <div>
+    <div className="w-full min-w-0">
       <div className="text-center text-sm font-black text-ink mb-2">{monthName}</div>
-      <div className="grid grid-cols-7 gap-1.5">
-        {HAWAIIAN_WEEKDAYS.map((d, i) => (
-          <div key={i} className="text-center text-[11px] font-black text-ink-soft">{d}</div>
+      <div className="grid grid-cols-7 gap-1 sm:gap-1.5">
+        {WEEKDAYS.map(({ short, full }, i) => (
+          <div key={i} aria-label={full} title={full} className="text-center text-[10px] sm:text-[11px] font-black text-ink-soft">{short}</div>
         ))}
         {Array.from({ length: lead }, (_, i) => <div key={'p' + i} />)}
         {days.map((d) => (
           <div
             key={d.key}
+            aria-label={`${d.key}${d.key === currentDay ? ', today' : ''}: ${d.xp} XP`}
             title={`${d.key}: ${d.xp} XP`}
-            className={`aspect-square rounded-xl flex items-center justify-center text-xs font-black transition-transform hover:scale-105 ${
+            className={`aspect-square min-w-0 rounded-lg sm:rounded-xl flex items-center justify-center text-xs font-black ${
+              d.key === currentDay ? 'ring-2 ring-sky ring-offset-1' : ''
+            } ${
               d.xp ? 'bg-[#FFF0E0] shadow-xs' : 'bg-cloud text-ink-soft'
             }`}
           >
-            {d.xp ? <Icon name="flame" size={22} /> : d.label}
+            {d.xp ? <Icon name="flame" size={18} /> : d.label}
           </div>
         ))}
         {Array.from({ length: trail }, (_, i) => <div key={'t' + i} />)}
@@ -166,10 +178,10 @@ export function ProfileScreen() {
   const unlocked = ACHIEVEMENTS.filter((a) => a.done(s)).length
 
   return (
-    <div className="h-full flex flex-col bg-white">
+    <div className="h-full min-h-0 flex flex-col bg-white">
       <header className="relative z-10 px-3 py-2 border-b-2 border-line bg-white shadow-[0_6px_14px_-10px_rgba(91,60,140,.25)]"><TopStats /></header>
 
-      <main className="flex-1 overflow-y-auto no-scrollbar screen-bg">
+      <main className="flex-1 min-h-0 overflow-y-auto no-scrollbar screen-bg">
         <AnimatePresence mode="wait">
           {page === 'main' && (
             <motion.div
@@ -224,12 +236,12 @@ export function ProfileScreen() {
                 </section>
 
                 {/* Streak Calendar - Preserved on main screen */}
-                <section className="card-soft rounded-2xl p-4">
-                  <div className="flex items-center justify-between mb-3">
-                    <h2 className="font-black text-lg flex items-center gap-2">
+                <section className="card-soft rounded-2xl p-3 sm:p-4">
+                  <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
+                    <h2 className="font-black text-base sm:text-lg flex items-center gap-2">
                       <Icon name="calendar" size={24} /> Streak Calendar
                     </h2>
-                    <span className="text-xs font-black text-sun-dark bg-sun-soft px-2.5 py-0.5 rounded-full border border-sun/30">
+                    <span className="text-[11px] sm:text-xs font-black text-sun-dark bg-sun-soft px-2.5 py-1 rounded-full border border-sun/30">
                       {s.streak} araw na tuloy-tuloy!
                     </span>
                   </div>
@@ -653,4 +665,3 @@ export function ProfileScreen() {
     </div>
   )
 }
-

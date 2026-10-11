@@ -48,12 +48,12 @@ export function PathScreen() {
   }
 
   return (
-    <div className="h-full flex flex-col bg-white relative">
+    <div className="h-full min-h-0 flex flex-col bg-white relative">
       <header className="px-3 py-2 border-b-2 border-line bg-white z-20">
         <TopStats />
       </header>
 
-      <main className="flex-1 overflow-y-auto no-scrollbar" style={SKY}>
+      <main className="flex-1 min-h-0 overflow-y-auto no-scrollbar" style={SKY}>
         {/* Daily goal + quests teaser */}
         <div className="px-4 pt-4 grid grid-cols-[1fr_auto] gap-3">
           <div className="rounded-2xl bg-white p-3 flex items-center gap-3 shadow-[0_4px_0_rgba(40,30,120,.25)]">
